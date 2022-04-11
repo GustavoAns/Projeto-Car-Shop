@@ -4,7 +4,7 @@ export default class GenericModel<T> {
   constructor(public model:M<T>) {}
 
   public async create(obj: T): Promise<T> {
-    const objCreated = await this.model.create(obj);
+    const objCreated = await this.model.create({ ...obj });
     return objCreated;
   }
 

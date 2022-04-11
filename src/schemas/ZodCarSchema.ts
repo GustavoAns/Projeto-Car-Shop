@@ -1,14 +1,6 @@
-// export interface Vehicle {
-//   model: string;
-//   year: number;
-//   color: string;
-//   status?: boolean;
-//   buyValue: number;
-// }
-
 import { z } from 'zod';
 
-const VehicleSchema = z.object({
+const CarSchema = z.object({
   model: z.string(),
   year: z.number(),
   color: z.string({
@@ -17,8 +9,11 @@ const VehicleSchema = z.object({
   }).min(3, { message: 'Color must be 3 or more characters long' }),
   status: z.boolean(),
   buyValue: z.number(),
+  doorsQty: z.number(),
+  seatsQty: z.number(),
 });
 
-type Vehicle = z.infer<typeof VehicleSchema>;
+type CarType = z.infer<typeof CarSchema>;
 
-export { VehicleSchema, Vehicle };
+export default CarType;
+export { CarSchema };
