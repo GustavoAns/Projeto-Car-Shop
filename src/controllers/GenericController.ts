@@ -9,57 +9,49 @@ export type ResponseError = {
   error: unknown;
 };
 
-export default class GenericController<T> {
-  constructor(public service: GenericService<T>) { }
+enum ControllerErrors {
+  internal = 'Internal Server Error',
+  notFound = 'Object not found',
+  requiredId = 'Id is required',
+  badRequest = 'Bad request',
+}
 
-  public async read(
+export default abstract class GenericController<T> {
+  abstract route: string;
+
+  protected errors = ControllerErrors;
+
+  constructor(protected service: GenericService<T>) { }
+
+  abstract create(
+    req: RequestWithBody<T>,
+    res: Response<T | ResponseError>,
+  ): Promise<typeof res>;
+
+  read = async (
     _req: Request,
-    res: Response<T[]>,
-  ): Promise<typeof res> {
-    const objs = await this.service.read();
-    return res.status(200).json(objs);
-  }
+    res: Response<T[] | ResponseError>,
+  ): Promise<typeof res> => {
+    try {
+      const objs = await this.service.read();
+      return res.status(200).json(objs);
+    } catch (err) {
+      return res.status(500).json({ error: this.errors.internal });
+    }
+  };
 
-  public async readOne(
-    req: Request,
-    res: Response<T | ResponseError>,
-  ): Promise<typeof res> {
-    const obj = await this.service.readOne(req.params.id);
+  abstract readOne(
+    req: Request<{ id: string; }>,
+    res: Response<T | ResponseError>
+  ): Promise<typeof res>;
 
-    if (!obj) return res.status(404).json({ error: 'Not found' });
-
-    return res.status(200).json(obj);
-  }
-
-  public async create(
-    req: RequestWithBody<T>,
-    res: Response<T>,
-  ): Promise<typeof res> {
-    const { body } = req;
-    const obj = await this.service.create(body);
-    return res.status(201).json(obj);
-  }
-
-  public async update(
+  abstract update(
     req: RequestWithBody<T>,
     res: Response<T | ResponseError>,
-  ): Promise<typeof res> {
-    const newValues = req.body;
-    const obj = await this.service.update(req.params.id, newValues);
+  ): Promise<typeof res>;
 
-    if (!obj) return res.status(404).json({ error: 'Not found' });
-
-    return res.status(200).json(obj);
-  }
-
-  public async delete(
-    req: Request,
-    res: Response<T | ResponseError>,
-  ): Promise<typeof res> {
-    const obj = await this.service.delete(req.params.id);
-
-    if (!obj) return res.status(404).json({ error: 'Not found' });
-
-    return res.status(200).json(obj);
-  }
+  abstract delete(
+    req: Request<{ id: string; }>,
+    res: Response<T | ResponseError>
+  ): Promise<typeof res>;
 }

@@ -1,30 +1,26 @@
-import { Model as M } from 'mongoose';
+import { Model as M, Document } from 'mongoose';
+import { Model } from '../interfaces/ModelInterface';
+// import { ServiceError } from '../services/GenericService';
 
-export default class GenericModel<T> {
-  constructor(public model:M<T>) {}
+export default abstract class GenericModel<T> implements Model<T> {
+  constructor(protected model:M<T & Document>) {}
 
-  public async create(obj: T): Promise<T> {
-    const objCreated = await this.model.create({ ...obj });
-    return objCreated;
-  }
+  create = async (obj: T): Promise<T> => this.model.create({ ...obj });
 
-  public async read(): Promise<T[]> {
-    const list = await this.model.find();
-    return list;
-  }
+  read = async (): Promise<T[]> => this.model.find();
 
-  public async readOne(id: string): Promise<T | null> {
-    const obj = await this.model.findOne({ _id: id });
-    return obj;
-  }
+  readOne = async (id: string): Promise<T | null> => {
+    const objId = { _id: id };
+    return this.model.findOne(objId);
+  };
 
-  public async update(id: string, obj: T): Promise<T | null> {
-    const objUpdated = await this.model.findByIdAndUpdate({ _id: id }, obj);
-    return objUpdated;
-  }
+  update = async (id: string, obj: T): Promise<T | null> => {
+    const objId = { _id: id };
+    return this.model.findByIdAndUpdate(objId, obj);
+  };
 
-  public async delete(id: string): Promise<T | null> {
-    const objRemoved = await this.model.findByIdAndDelete({ _id: id });
-    return objRemoved;
-  }
+  delete = async (id: string): Promise<T | null> => {
+    const objId = { _id: id };
+    return this.model.findByIdAndDelete(objId);
+  };
 }

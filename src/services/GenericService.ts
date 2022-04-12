@@ -1,31 +1,32 @@
-import GenericModel from '../models/GenericModel';
-// import { Model } from '../interfaces/ModelInterface';
+import { ZodError } from 'zod';
 
-export default class GenericService<T> {
-  constructor(public model: GenericModel<T>) {}
+// import GenericModel from '../models/GenericModel';
+import { Model } from '../interfaces/ModelInterface';
 
-  public async create(obj: T): Promise<T> {
-    const item = await this.model.create(obj);
-    return item;
+export interface ServiceError {
+  error: ZodError;
+}
+
+export default abstract class GenericService<T> {
+  constructor(protected model: Model<T>) {}
+
+  public async create(obj: T): Promise<T | null | ServiceError> {
+    return this.model.create(obj);
   }
 
   public async read(): Promise<T[]> {
-    const items = await this.model.read();
-    return items;
+    return this.model.read();
   }
 
-  public async readOne(id: string): Promise<T | null> {
-    const item = await this.model.readOne(id);
-    return item;
+  public async readOne(id: string): Promise<T | null | ServiceError> {
+    return this.model.readOne(id);
   }
 
-  public async update(id: string, obj: T): Promise<T | null> {
-    const item = await this.model.update(id, obj);
-    return item;
+  public async update(id: string, obj: T): Promise<T | null | ServiceError> {
+    return this.model.update(id, obj);
   }
 
-  public async delete(id: string): Promise<T | null> {
-    const item = await this.model.delete(id);
-    return item;
+  public async delete(id: string): Promise<T | null | ServiceError> {
+    return this.model.delete(id);
   }
 }
