@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-// eslint-disable-next-line max-len
-import GenericController, { RequestWithBody, ResponseError } from './GenericController';
+import GenericController, { RequestWithBody, ResponseError } 
+  from './GenericController';
 import CarService from '../services/CarService';
 import { Car } from '../interfaces/CarInterface';
 
