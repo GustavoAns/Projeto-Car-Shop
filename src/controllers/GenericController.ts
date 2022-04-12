@@ -22,7 +22,7 @@ export default abstract class GenericController<T> {
 
   protected errors = ControllerErrors;
 
-  constructor(protected service: GenericService<T>) { }
+  constructor(public service: GenericService<T>) { }
 
   abstract create(
     req: RequestWithBody<T>,
