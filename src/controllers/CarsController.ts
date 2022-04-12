@@ -47,7 +47,7 @@ export default class CarController extends GenericController<Car> {
         ? res.status(200).json(frame)
         : res.status(404).json({ error: this.errors.notFound });
     } catch (error) {
-      return res.status(500).json({ error: this.errors.internal });
+      return res.status(400).json({ error: this.errors.characterError });
     }
   };
 
